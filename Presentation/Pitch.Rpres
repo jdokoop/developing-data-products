@@ -1,0 +1,42 @@
+Predicting the Growth of Internet Access Worlwide Between 2017-2030
+========================================================
+author: Developing Data Products
+date: March 2015
+
+Motivation
+========================================================
+
+In a globalized world, Internet access constitutes a fundamental factor in ensuring a population's access to education, information, opportunity, and participation in society. Yet, as of 2014, only 40% of the world's population had access to the Internet, mostly in developed countries. 
+
+Therefore, a clear visualization of the number of Internet users ny country and its expected growth provides a valuable metric of socio-economic development, as well as an important resource to inform public policy.
+
+Description The Application
+========================================================
+This application strives to provide a user-friendly way to estimate and visualize the percentage of the population in any given country with access to the Internet in the period comprised between 2017 and 2030. Results can be visualized at the global or regional level. The application is constructed on World Bank data on the number of Internet users per country. This dataset, as well as many others, is publicly available at http://databank.worldbank.org/ 
+
+
+Logic Behing the Application
+========================================================
+Calculations are performed with regression models on World Bank data on the number of Internet users between 2000-2012. For instance, the plot below shows the raw data for Antigua and Barbuda. The models are then extrapolated for the future years of interest. 
+```{r, echo=FALSE}
+  #Load data frame from CSV file and select only complete cases
+  df <- read.csv("internet_users.csv", na.strings = "..")
+  df <- na.omit(df)
+
+  #List with years for availble measurements from 2000-2012
+  years <- c(2000:2012)
+  
+  #Fit a linear model to each row of the data frame
+  #Model is users ~ year
+  linear.models <- apply(df, 1, function(x) lm(as.numeric(x[3:15]) ~ years))
+  
+  #Fit an exponential model to each row of the data frame
+  #Model is log(users) ~ year
+  exp.models <- apply(df, 1, function(x) lm(log(as.numeric(x[3:15])+1E6) ~ years))
+  plot(years, df[5,3:15],xlab="Year",ylab="% of Population with Internet Access")
+```
+
+User Interface
+========================================================
+![Screenshot](Screenshot.pdf)
+
